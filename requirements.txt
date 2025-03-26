@@ -1,0 +1,6 @@
+Flask
+Flask-SQLAlchemy
+Flask-APScheduler
+SQLAlchemy
+python-dotenv
+flask-cors
