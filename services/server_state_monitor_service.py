@@ -91,7 +91,7 @@ class ServerStateMonitorService:
             return usage_data
             
         except Exception as e:
-            logger.error(f"Error getting resource usage for {server.name}: {str(e)}")
+            logger.error(f"Error getting resource usage for {server_name}: {str(e)}")
             return None
     
     @staticmethod

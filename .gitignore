@@ -47,4 +47,19 @@ instance/
 .Spotlight-V100
 .Trashes
 ehthumbs.db
-Thumbs.db 
+Thumbs.db
+
+# Flask Session
+flask_session/
+.flask_session/
+sessions/
+
+# Additional items to ignore
+.coverage
+htmlcov/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage.*
+coverage.xml
+*.cover 

@@ -1,0 +1,52 @@
+/* General styles */
+body {
+    background-color: #f8f9fa;
+}
+
+/* Navbar customization */
+.navbar {
+    box-shadow: 0 2px 4px rgba(0,0,0,.1);
+}
+
+/* Card customization */
+.card {
+    box-shadow: 0 1px 3px rgba(0,0,0,.1);
+    border: none;
+}
+
+.card-header {
+    background-color: #fff;
+    border-bottom: 1px solid rgba(0,0,0,.1);
+}
+
+/* Table customization */
+.table th {
+    border-top: none;
+    background-color: #f8f9fa;
+}
+
+.table td {
+    vertical-align: middle;
+}
+
+/* Button customization */
+.btn-group-sm > .btn {
+    padding: .25rem .5rem;
+}
+
+/* Badge customization */
+.badge {
+    padding: .5em .8em;
+}
+
+/* Form customization */
+.form-control:focus {
+    box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+    border-color: #80bdff;
+}
+
+/* Modal customization */
+.modal-content {
+    border: none;
+    box-shadow: 0 0.5rem 1rem rgba(0,0,0,.15);
+}

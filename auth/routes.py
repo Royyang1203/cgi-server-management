@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session
 from functools import wraps
-from .ldap_client import ldap_authenticate
+from auth.ldap_client import ldap_authenticate
 
 auth_bp = Blueprint('auth', __name__)
 
@@ -20,7 +20,7 @@ def login():
         
         if ldap_authenticate(username, password):
             session['user'] = username
-            return redirect(url_for('main.dashboard'))
+            return redirect(url_for('dashboard'))
         else:
             flash('Invalid username or password', 'error')
     
