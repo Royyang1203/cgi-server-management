@@ -132,7 +132,7 @@ class ServerStateMonitorService:
     def check_and_update_server_states():
         """Check and update the status of all servers"""
         servers = Server.query.all()
-        now = datetime.now(UTC)
+        now = datetime.now(UTC)  # Ensure UTC time
         
         for server in servers:
             try:
@@ -150,7 +150,7 @@ class ServerStateMonitorService:
                     # Update idle state
                     if is_idle and not server.is_idle:
                         server.is_idle = True
-                        server.idle_start_time = now
+                        server.idle_start_time = now  # Ensure UTC time
                         logger.info(f"Server {server.name} marked as idle")
                     elif not is_idle and server.is_idle:
                         server.is_idle = False
@@ -211,28 +211,38 @@ class ServerStateMonitorService:
         """Check idle servers and shut them down if conditions are met"""
         logger.info("Starting idle server check for automatic shutdown...")
         
-        # Get all servers that are currently powered on and idle
-        servers_on = Server.query.filter_by(power_state='ON', is_idle=True).all()
-        logger.info(f"Found {len(servers_on)} powered on and idle servers")
+        # Get all servers that have auto shutdown enabled, are powered on and idle
+        servers = Server.query.filter_by(
+            power_state='ON',
+            is_idle=True,
+            auto_shutdown_enabled=True
+        ).all()
         
-        for srv in servers_on:
-            logger.info(f"Checking server {srv.name} (idle threshold: {srv.idle_threshold_mins} minutes)")
-            
-            # Calculate idle duration
-            idle_duration = ServerStateMonitorService._calculate_idle_duration(srv.idle_start_time)
-            logger.info(f"Server {srv.name} has been idle for {idle_duration} minutes")
-            
-            if idle_duration >= srv.idle_threshold_mins:
-                logger.info(f"Server {srv.name} exceeded idle threshold ({idle_duration}/{srv.idle_threshold_mins} minutes)")
+        logger.info(f"Found {len(servers)} powered on, idle servers with auto shutdown enabled")
+        
+        now = datetime.now(UTC)
+        for server in servers:
+            try:
+                logger.info(f"Checking server {server.name} (idle threshold: {server.idle_threshold_mins} minutes)")
                 
-                # Check if server is in no-shutdown schedule
-                if not ScheduleService.is_in_schedule(srv, datetime.now(UTC)):
-                    logger.info(f"Initiating shutdown for server {srv.name}")
-                    PowerControlService.shutdown(srv)
-                    logger.info(f"Shutdown command sent to server {srv.name}")
+                # Calculate idle duration
+                idle_duration = ServerStateMonitorService._calculate_idle_duration(server.idle_start_time)
+                logger.info(f"Server {server.name} has been idle for {idle_duration} minutes")
+                
+                if idle_duration >= server.idle_threshold_mins:
+                    logger.info(f"Server {server.name} exceeded idle threshold ({idle_duration}/{server.idle_threshold_mins} minutes)")
+                    
+                    # Check if server is in no-shutdown schedule
+                    if not ScheduleService.is_in_schedule(server, now):
+                        logger.info(f"Initiating shutdown for server {server.name}")
+                        PowerControlService.shutdown(server)
+                        logger.info(f"Shutdown command sent to server {server.name}")
+                    else:
+                        logger.info(f"Server {server.name} is in no-shutdown schedule, skipping shutdown")
                 else:
-                    logger.info(f"Server {srv.name} is in no-shutdown schedule, skipping shutdown")
-            else:
-                logger.info(f"Server {srv.name} has not reached idle threshold yet ({idle_duration}/{srv.idle_threshold_mins} minutes)")
+                    logger.info(f"Server {server.name} has not reached idle threshold yet ({idle_duration}/{server.idle_threshold_mins} minutes)")
+            except Exception as e:
+                logger.error(f"Error processing server {server.name}: {str(e)}")
+                continue
         
         logger.info("Completed idle server check")

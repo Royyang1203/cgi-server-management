@@ -1,8 +1,10 @@
 # routes.py
-from flask import Blueprint
+from flask import Blueprint, jsonify, request
 from flask_restx import Api, Resource, fields
 from controllers.server_controller import ServerController
 from controllers.server_management_controller import ServerManagementController
+from models.server import Server
+from models.database import db
 
 # Create Blueprint
 routes_bp = Blueprint('routes', __name__)
@@ -149,3 +151,29 @@ class ServerManagementByName(Resource):
     def delete(self, server_name):
         """Delete a server"""
         return ServerManagementController.delete_server(server_name)
+
+@routes_bp.route('/servers/name/<server_name>/idle-settings', methods=['POST'])
+def update_idle_settings(server_name):
+    try:
+        server = Server.query.filter_by(name=server_name).first()
+        if not server:
+            return jsonify({'success': False, 'message': 'Server not found'}), 404
+        
+        data = request.get_json()
+        threshold = data.get('idle_threshold_mins')
+        auto_shutdown = data.get('auto_shutdown_enabled')
+        
+        if threshold is not None:
+            if not isinstance(threshold, int) or threshold < 1:
+                return jsonify({'success': False, 'message': 'Invalid threshold value'}), 400
+            server.idle_threshold_mins = threshold
+            
+        if auto_shutdown is not None:
+            server.auto_shutdown_enabled = bool(auto_shutdown)
+        
+        db.session.commit()
+        return jsonify({'success': True})
+        
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'success': False, 'message': str(e)}), 500

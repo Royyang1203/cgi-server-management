@@ -50,6 +50,9 @@ class PowerControlService:
         if success:
             server.power_state = "ON"
             server.last_update_time = datetime.now(UTC)
+            # Reset idle state
+            server.is_idle = True
+            server.idle_start_time = datetime.now(UTC)
             db.session.commit()
         return success
 

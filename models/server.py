@@ -17,6 +17,7 @@ class Server(db.Model):
     is_idle = db.Column(db.Boolean, default=False)
     idle_start_time = db.Column(db.DateTime, nullable=True)
     idle_threshold_mins = db.Column(db.Integer, default=30)  # Default 30 minutes idle threshold
+    auto_shutdown_enabled = db.Column(db.Boolean, default=False)  # Whether to auto shutdown when idle
     cpu_usage = db.Column(db.Float, nullable=True)
     gpu_usage = db.Column(db.Float, nullable=True)
 

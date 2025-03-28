@@ -55,6 +55,12 @@ def create_app(config_name=None):
         with app.app_context():
             ServerStateMonitorService.check_and_update_server_states()
     
+    @scheduler.task('interval', id='check_idle_servers',
+                   seconds=5)  # Check every 5 seconds
+    def check_idle_servers():
+        with app.app_context():
+            ServerStateMonitorService.check_idle_and_shutdown()
+    
     # Main route for the web interface
     @app.route('/')
     def index():

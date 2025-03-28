@@ -27,6 +27,8 @@
                                 <th>Power State</th>
                                 <th>Last Update</th>
                                 <th>Resource Usage</th>
+                                <th>Idle Time</th>
+                                <th>Idle Settings</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -71,6 +73,35 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                 <button type="button" class="btn btn-primary" id="addServerSubmit">Add Server</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Idle Settings Modal -->
+<div class="modal fade" id="idleSettingsModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Idle Settings</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="idleSettingsForm">
+                    <input type="hidden" id="idleSettingsServerName">
+                    <div class="mb-3">
+                        <label for="idleThreshold" class="form-label">Idle Threshold (minutes)</label>
+                        <input type="number" class="form-control" id="idleThreshold" min="1" required>
+                    </div>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="autoShutdown">
+                        <label class="form-check-label" for="autoShutdown">Enable Auto Shutdown</label>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="saveIdleSettings">Save Settings</button>
             </div>
         </div>
     </div>
