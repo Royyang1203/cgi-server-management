@@ -1,4 +1,5 @@
 from models.server import Server
+from models.schedule import Schedule
 from models.database import db
 from datetime import datetime, UTC
 from flask import Flask
