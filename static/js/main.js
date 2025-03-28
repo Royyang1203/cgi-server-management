@@ -3,13 +3,7 @@ document.addEventListener('DOMContentLoaded', function() {
     loadServerList();
     
     // Setup event listeners
-    const addServerForm = document.getElementById('addServerForm');
-    const addServerSubmit = document.getElementById('addServerSubmit');
     const saveIdleSettings = document.getElementById('saveIdleSettings');
-    
-    if (addServerSubmit) {
-        addServerSubmit.addEventListener('click', handleAddServer);
-    }
     
     if (saveIdleSettings) {
         saveIdleSettings.addEventListener('click', handleSaveIdleSettings);
@@ -124,35 +118,6 @@ function togglePower(serverName, currentState) {
     .catch(error => {
         console.error('Error toggling power:', error);
         alert('Failed to toggle server power');
-    });
-}
-
-function handleAddServer() {
-    const form = document.getElementById('addServerForm');
-    const data = {
-        name: form.querySelector('#serverName').value,
-        ipmi_host: form.querySelector('#ipmiHost').value,
-        ipmi_user: form.querySelector('#ipmiUser').value,
-        ipmi_pass: form.querySelector('#ipmiPass').value
-    };
-
-    fetch('/api/servers/manage', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
-    })
-    .then(response => response.json())
-    .then(data => {
-        const modal = bootstrap.Modal.getInstance(document.getElementById('addServerModal'));
-        modal.hide();
-        form.reset();
-        loadServerList();
-    })
-    .catch(error => {
-        console.error('Error adding server:', error);
-        alert('Failed to add server');
     });
 }
 
