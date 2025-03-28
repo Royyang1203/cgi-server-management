@@ -9,8 +9,8 @@ document.addEventListener('DOMContentLoaded', function() {
         addServerSubmit.addEventListener('click', handleAddServer);
     }
 
-    // Refresh server list every 30 seconds
-    setInterval(loadServerList, 30000);
+    // Refresh server list every second
+    setInterval(loadServerList, 1000);
 });
 
 function loadServerList() {
@@ -35,10 +35,9 @@ function createServerRow(server) {
     // Server name
     tr.innerHTML = `
         <td>${server.name}</td>
-        <td>${server.ipmi_host}</td>
         <td>
-            <span class="badge bg-${server.power_state === 'on' ? 'success' : 'danger'}">
-                ${server.power_state}
+            <span class="badge bg-${server.power_state === 'ON' ? 'success' : 'secondary'}">
+                ${server.power_state.toUpperCase()}
             </span>
         </td>
         <td>${new Date(server.last_update_time).toLocaleString()}</td>
@@ -48,9 +47,9 @@ function createServerRow(server) {
         </td>
         <td>
             <div class="btn-group btn-group-sm">
-                <button class="btn btn-${server.power_state === 'on' ? 'danger' : 'success'}"
+                <button class="btn btn-${server.power_state === 'ON' ? 'danger' : 'success'}"
                         onclick="togglePower('${server.name}', '${server.power_state}')">
-                    ${server.power_state === 'on' ? 'Power Off' : 'Power On'}
+                    ${server.power_state === 'ON' ? 'Power Off' : 'Power On'}
                 </button>
             </div>
         </td>
@@ -60,7 +59,13 @@ function createServerRow(server) {
 }
 
 function togglePower(serverName, currentState) {
-    const action = currentState === 'on' ? 'off' : 'on';
+    const action = currentState === 'ON' ? 'off' : 'on';
+    const confirmMessage = `Are you sure you want to power ${action} server "${serverName}"?`;
+    
+    if (!confirm(confirmMessage)) {
+        return; // 如果用戶點擊取消，就不執行後續操作
+    }
+
     fetch(`/api/servers/name/${serverName}/power/${action}`, {
         method: 'POST'
     })
